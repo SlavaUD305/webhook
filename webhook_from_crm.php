@@ -12,21 +12,8 @@ require_once (__DIR__.'/connect.php');
 
 function create_company($data)
 {
-//БД
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
-    $query = "SELECT id_contact_crm FROM contact_id";
-    $resultId = mysqli_query($link, $query);
-    $contact_synergy = mysqli_fetch_array($resultId, MYSQLI_NUM);
-
-    // $queryD = "SELECT id_deal_synergy FROM deal_id";
-    // $resultIdD = mysqli_query($link, $queryD);
-    // $deal_synergy = mysqli_fetch_array($resultIdD, MYSQLI_NUM);
-
-    //$queryT = "SELECT id_task_synergy FROM task_id";
-    // $resultIdT = mysqli_query($link, $queryT);
-    // $task_synergy = mysqli_fetch_array($resultIdT, MYSQLI_NUM);
-    //
 
     $sIdCompany = $data['id'];
     $sTitle = $data['name'];
@@ -44,7 +31,6 @@ function create_company($data)
     $sDescription = $data['description'];
     $sWeb = $data['website'];
     $arWeb = (!empty($sWeb)) ? array(array('VALUE' => $sWeb, 'VALUE_TYPE' => 'OTHER')) : array();
-
 
     $arPhoneGeneral = (!empty($sPhoneGeneral)) ? array(array('VALUE' => $sPhoneGeneral, 'VALUE_TYPE' => 'WORK')) : array();
     $arPhoneMobile = (!empty($sPhoneMobile)) ? array(array('VALUE' => $sPhoneMobile, 'VALUE_TYPE' => 'MOBILE')) : array();
@@ -83,13 +69,42 @@ function create_company($data)
     $sIdContact = $data['contact_id'];
     $sIdDeal = $data['deal_id'];
     $sIdTask = $data['task_id'];
+
+    if(!empty($sDescription)){
+        $sCom = "Описание: {$sDescription}";
+    }
+    if(!empty($sActualCountry)){
+        $sCom = "{$sCom} Факт. страна: {$sActualCountry};";
+    }
+    if(!empty($sActualRegion)){
+        $sCom = "{$sCom} Факт. регион: {$sActualRegion};";
+    }
+    if(!empty($sActualCity)){
+        $sCom = "{$sCom} Факт. город:{$sActualCity};";
+    }
+    if(!empty($sActualStreet)){
+        $sCom = "{$sCom} Факт. улица:{$sActualStreet};";
+    }
+    if(!empty($sActualHouse)){
+        $sCom = "{$sCom} Факт. дом:{$sActualHouse};";
+    }
+    if(!empty($sActualBuild)){
+        $sCom = "{$sCom} Факт. строение:{$sActualBuild};";
+    }
+    if(!empty($sActualOffice)){
+        $sCom = "{$sCom} Факт. офис:{$sActualOffice};";
+    }
+    if(!empty($sActualZipCode)){
+        $sCom = "{$sCom} Факт. индекс:{$sActualZipCode}.";
+    }
+
     if (empty ($result = CRest::call(
         'crm.company.add',
         [
             'fields' =>
                 [
                     'TITLE' => $sTitle,//name
-                    'COMMENTS' => $sDescription,             //description
+                    'COMMENTS' => $sCom,             //description
                     'PHONE' => $arPhoneGeneral,//general-phone
                     'PHONE' => $arPhoneMobile, //mobile-phone
                     'PHONE' => $arPhoneWork,//work-phone
