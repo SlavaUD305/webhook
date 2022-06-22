@@ -178,7 +178,8 @@ function create_company($data)
                         update_deal($data);
                         //обновление сделки
                     } else{
-                        create_deal($data);
+                        error_log("create deal");
+                        //create_deal($data);
                     }
                 }
             }
@@ -195,7 +196,8 @@ function create_company($data)
                     if (!empty($idDealBitrix)) {
                         update_task($data);
                     } else {
-                        create_task($data);
+                        error_log("Create task");
+                        //create_task($data);
                     }
                 }
             }
