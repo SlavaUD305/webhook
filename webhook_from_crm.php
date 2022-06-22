@@ -14,18 +14,18 @@ function create_company($data)
 {
 //БД
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    $link = mysqli_connect('localhost:3306', 'root', 'root', 'integration');
-    $query = "SELECT id_contact_synergy FROM contact_id";
+    $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
+    $query = "SELECT id_contact_crm FROM contact_id";
     $resultId = mysqli_query($link, $query);
     $contact_synergy = mysqli_fetch_array($resultId, MYSQLI_NUM);
 
-    $queryD = "SELECT id_deal_synergy FROM deal_id";
-    $resultIdD = mysqli_query($link, $queryD);
-    $deal_synergy = mysqli_fetch_array($resultIdD, MYSQLI_NUM);
+    // $queryD = "SELECT id_deal_synergy FROM deal_id";
+    // $resultIdD = mysqli_query($link, $queryD);
+    // $deal_synergy = mysqli_fetch_array($resultIdD, MYSQLI_NUM);
 
-    $queryT = "SELECT id_task_synergy FROM task_id";
-    $resultIdT = mysqli_query($link, $queryT);
-    $task_synergy = mysqli_fetch_array($resultIdT, MYSQLI_NUM);
+    //$queryT = "SELECT id_task_synergy FROM task_id";
+    // $resultIdT = mysqli_query($link, $queryT);
+    // $task_synergy = mysqli_fetch_array($resultIdT, MYSQLI_NUM);
     //
 
 
@@ -144,67 +144,34 @@ function create_company($data)
                     ]
                 ]);
         }
-        $queryContactCompany = "SELECT id_contact_bitrix FROM contact_id WHERE id_contact_synergy=?";
-        $stmt = mysqli_prepare($link, $queryContactCompany);
-        mysqli_stmt_bind_param($stmt, "i", $sIdContact);
-        foreach ($contact_synergy as $sIdContact) {
-            mysqli_stmt_execute($stmt);
-            $resultSelect = mysqli_stmt_get_result($stmt);
-            while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
-                foreach ($row as $idContactBitrix) {
-                    if (!empty($idContactBitrix)) {
-                        $resultRequisite = CRest::call(
-                            'crm.company.contact.add',
-                            ['id' => $result['result'],
-                                'fields' => [
-                                    'CONTACT_ID' => idContactBitrix
-                                ]
-                            ]);
-                    } else {
-                        create_contact($data);
-                    }
-                }
-            }
-        }
-        $queryDealCompany = "SELECT id_deal_bitrix FROM deal_id WHERE id_deal_synergy=?";
-        $stmtd = mysqli_prepare($link, $queryDealCompany);
-        mysqli_stmt_bind_param($stmt, "i", $sIdDeal);
-        foreach ($deal_synergy as $sIdDeal) {
-            mysqli_stmt_execute($stmtd);
-            $resultSelectDeal = mysqli_stmt_get_result($stmtd);
-            while ($rowd = mysqli_fetch_array($resultSelectDeal, MYSQLI_NUM)) {
-                foreach ($rowd as $idDealBitrix) {
-                    if (!empty($idDealBitrix)) {
-                        update_deal($data);
-                        //обновление сделки
-                    } else{
-                        error_log("create deal");
-                        //create_deal($data);
-                    }
-                }
-            }
-
-        }
-        $queryTaskCompany = "SELECT id_task_bitrix FROM task_id WHERE id_task_synergy=?";
-        $stmtt = mysqli_prepare($link, $queryTaskCompany);
-        mysqli_stmt_bind_param($stmtt, "i", $sIdTask);
-        foreach ($task_synergy as $sIdTask) {
-            mysqli_stmt_execute($stmtt);
-            $resultSelectTask = mysqli_stmt_get_result($stmtt);
-            while ($rowt = mysqli_fetch_array($resultSelectTask, MYSQLI_NUM)) {
-                foreach ($rowt as $idTaskBitrix) {
-                    if (!empty($idDealBitrix)) {
-                        update_task($data);
-                    } else {
-                        error_log("Create task");
-                        //create_task($data);
-                    }
-                }
-            }
-        }
-       //проверяем есть ли такая сделка в бд если есть функция обновления если нет функция создания $sIdDeal
     }
 }
+
+    //    $queryContactCompany = "SELECT id_contact_bitrix FROM contact_id WHERE id_contact_crm=?";
+     //   $stmt = mysqli_prepare($link, $queryContactCompany);
+      //  mysqli_stmt_bind_param($stmt, "i", $sIdContact);
+       // foreach ($contact_synergy as $sIdContact) {
+        //    mysqli_stmt_execute($stmt);
+         //   $resultSelect = mysqli_stmt_get_result($stmt);
+          //  while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
+           //     foreach ($row as $idContactBitrix) {
+            //        if (!empty($idContactBitrix)) {
+             //           $resultRequisite = CRest::call(
+              //              'crm.company.contact.add',
+               //             ['id' => $result['result'],
+                //                'fields' => [
+                 //                   'CONTACT_ID' => idContactBitrix
+                  //              ]
+                   //         ]);
+                   // } else {
+                    //    create_contact($data);
+                   // }
+               // }
+           // }
+       // }
+       //проверяем есть ли такая сделка в бд если есть функция обновления если нет функция создания $sIdDeal
+   // }
+
  //Deal
 //в конце айди компании по синергии и битриксу добавляем в БД
         
