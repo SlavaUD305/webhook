@@ -28,7 +28,7 @@ function create_company($data)
     // $task_synergy = mysqli_fetch_array($resultIdT, MYSQLI_NUM);
     //
 
-
+    $sIdCompany = $data['id'];
     $sTitle = $data['name'];
     $sEmail = $data['email'];
     $sEmailOther = $data['other_email'];
@@ -144,6 +144,9 @@ function create_company($data)
                     ]
                 ]);
         }
+        $stmt = mysqli_prepare($link, "INSERT INTO companys_id (id_company_crm, id_company_bitrix) VALUES (?,?)");
+        mysqli_stmt_bind_param($stmt, "ii", $sIdCompany, $result['result']);
+        mysqli_stmt_execute($stmt);
     }
 }
 
