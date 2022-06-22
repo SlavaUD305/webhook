@@ -65,10 +65,14 @@ function create_company($data)
     $sActualHouse = $data['actual_house'];
     $sActualBuild = $data['actual_build'];
     $sActualOffice = $data['actual_office'];
-    //$sIdContact = $data['contact_id'];
-    $sIdContact = $data['contact_id'];
-    $sIdDeal = $data['deal_id'];
-    $sIdTask = $data['task_id'];
+    $sMailingCountry = $data['mailing_country'];
+    $sMailingRegion = $data['mailing_region'];
+    $sMailingCity = $data['mailing_city'];
+    $sMailingZipCode = $data['mailing_zip_code'];
+    $sMailingStreet = $data['mailing_street'];
+    $sMailingHouse = $data['mailing_house'];
+    $sMailingBuild = $data['mailing_build'];
+    $sMailingOffice = $data['mailing_office'];
 
     if(!empty($sDescription)){
         $sCom = "Описание: {$sDescription}";
@@ -80,24 +84,47 @@ function create_company($data)
         $sCom = "{$sCom} Факт. регион: {$sActualRegion};";
     }
     if(!empty($sActualCity)){
-        $sCom = "{$sCom} Факт. город:{$sActualCity};";
+        $sCom = "{$sCom} Факт. город: {$sActualCity};";
     }
     if(!empty($sActualStreet)){
-        $sCom = "{$sCom} Факт. улица:{$sActualStreet};";
+        $sCom = "{$sCom} Факт. улица: {$sActualStreet};";
     }
     if(!empty($sActualHouse)){
-        $sCom = "{$sCom} Факт. дом:{$sActualHouse};";
+        $sCom = "{$sCom} Факт. дом: {$sActualHouse};";
     }
     if(!empty($sActualBuild)){
-        $sCom = "{$sCom} Факт. строение:{$sActualBuild};";
+        $sCom = "{$sCom} Факт. строение: {$sActualBuild};";
     }
     if(!empty($sActualOffice)){
-        $sCom = "{$sCom} Факт. офис:{$sActualOffice};";
+        $sCom = "{$sCom} Факт. офис: {$sActualOffice};";
     }
     if(!empty($sActualZipCode)){
-        $sCom = "{$sCom} Факт. индекс:{$sActualZipCode}.";
+        $sCom = "{$sCom} Факт. индекс: {$sActualZipCode};";
     }
-
+    if(!empty($sMailingCountry)){
+        $sCom = "{$sCom} Почт. страна : {$sMailingCountry};";
+    }
+    if(!empty($sMailingRegion)){
+        $sCom = "{$sCom} Почт. регион: {$sMailingRegion};";
+    }
+    if(!empty($sMailingCity)){
+        $sCom = "{$sCom} Почт. город: {$sMailingCity};";
+    }
+    if(!empty($sMailingStreet)){
+        $sCom = "{$sCom} Почт. улица: {$sMailingStreet};";
+    }
+    if(!empty($sMailingHouse)){
+        $sCom = "{$sCom} Почт. дом: {$sMailingHouse};";
+    }
+    if(!empty($sMailingBuild)){
+        $sCom = "{$sCom} Почт. корпус: {$sMailingBuild};";
+    }
+    if(!empty($sMailingOffice)){
+        $sCom = "{$sCom} Почт. офис: {$sMailingOffice};";
+    }
+    if(!empty($sMailingZipCode)){
+        $sCom = "{$sCom} Почт. индекс: {$sMailingZipCode};";
+    }
     if (empty ($result = CRest::call(
         'crm.company.add',
         [
