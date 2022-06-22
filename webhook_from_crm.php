@@ -3,101 +3,118 @@
 
 require_once (__DIR__.'/crest.php');
 require_once (__DIR__.'/connect.php');
-require_once(__DIR__,'/Company.php');
-require_once(__DIR__,'/Contact.php');
-require_once(__DIR__,'/Deal.php');
-require_once(__DIR__,'/Task.php');
+//require_once(__DIR__,'/Company.php');
+//require_once(__DIR__,'/Contact.php');
+//require_once(__DIR__,'/Deal.php');
+//require_once(__DIR__,'/Task.php');
 
 
-function create_company($data){
-    
-  $contact_synergy_check = mysql_query("SELECT id_contact_synergy FROM Contacts");
-  $contact_synergy = mysql_fetch_array($contact_synergy_check);
-  
 
-  $sTitle = $data['name'];
-  $sEmail = $data['email'];
-  $sEmailOther = $data['other_email'];
+function create_company($data)
+{
+//БД
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $link = mysqli_connect('localhost:3306', 'root', 'root', 'integration');
+    $query = "SELECT id_contact_synergy FROM contact_id";
+    $resultId = mysqli_query($link, $query);
+    $contact_synergy = mysqli_fetch_array($resultId, MYSQLI_NUM);
 
-  $sPhoneGeneral = $data['general_phone'];
-  $sPhoneMobile = $data['mobile_phone'];
-  $sPhoneWork = $data['work_phone'];
-  $sPhoneWorkPostfix = $data['work_phone_postfix'];
-  $sPhoneOther = $data['other_phone'];
-  $sPhoneOtherPostfix = $data['other_phone_postfix'];
-  $sPhoneFax = $data['fax'];
-  
-  $sDescription = $data['description'];
-  $sWeb = $data['website'];
-  $arWeb = (!empty($sWeb)) ? array (array('VALUE' => $sWeb, 'VALUE_TYPE' => 'OTHER')) : array ();
+    $queryD = "SELECT id_deal_synergy FROM deal_id";
+    $resultIdD = mysqli_query($link, $queryD);
+    $deal_synergy = mysqli_fetch_array($resultIdD, MYSQLI_NUM);
 
-  
-  $arPhoneGeneral = (!empty($sPhoneGeneral)) ? array(array('VALUE' => $sPhoneGeneral, 'VALUE_TYPE' => 'WORK')) : array();
-  $arPhoneMobile = (!empty($sPhoneMobile)) ? array(array('VALUE' =>  $sPhoneMobile, 'VALUE_TYPE' => 'MOBILE')) : array();
-  $arPhoneWork = (!empty($sPhoneWork)) ? array(array('VALUE' => $sPhoneWork, 'VALUE_TYPE' => 'WORK')) : array();
-  $arPhoneWorkPostfix = (!empty($sPhoneWorkPostfix)) ? array(array('VALUE' => $sPhoneWorkPostfix, 'VALUE_TYPE' => 'WORK')) : array();
-  $arPhoneOther = (!empty($sPhoneOther)) ? array(array('VALUE' => $sPhoneOther, 'VALUE_TYPE' => 'OTHER')) : array();
-  $arPhoneOtherPostfix = (!empty($sPhoneOtherPostfix)) ? array(array('VALUE' =>  $sPhoneOtherPostfix, 'VALUE_TYPE' => 'OTHER')) : array();
-  $arPhoneFax = (!empty($sPhoneFax)) ? array(array('VALUE' => $sPhoneFax, 'VALUE_TYPE' => 'FAX')) : array();
-  $arEmail = (!empty($sEmail)) ? array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'WORK')) : array();
-  $arEmailOther = (!empty($sEmailOther)) ? array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'OTHER')) : array();
+    $queryT = "SELECT id_task_synergy FROM task_id";
+    $resultIdT = mysqli_query($link, $queryT);
+    $task_synergy = mysqli_fetch_array($resultIdT, MYSQLI_NUM);
+    //
 
-  $sINN = $data['inn'];
-  $sFullName = $data['full_name'];
-  $sShortName = $data['short_name'];
-  $sOgrn = $data['ogrn'];
-  $sKpp = $data['kpp'];
-  $sOkved = $data['okved'];
-  $sDirector = $data['director'];
-  $sAccountant = $data['accountant'];
- 
 
-  $sCountry = $data['country'];
-  $sRegion = $data['region'];
-  $sCity = $data['city'];
-  $sAddress = $data['address'];
-  $sZipCode = $data['zip_code'];
-  $sActualCountry = $data['actual_country'];
-  $sActualRegion = $data['actual_region'];
-  $sActualCity = $data['actual_city'];
-  $sActualZipCode = $data['actual_zip_code'];
-  $sActualStreet = $data['actual_street'];
-  $sActualHouse = $data['actual_house'];
-  $sActualBuild = $data['actual_build'];
-  $sActualOffice = $data['actual_office'];
-  $sIdContact = $data['contact_id'];
- 
-   if(empty ($result = CRest::call(
-      'crm.company.add',
-      [
-          'fields'=>
-          [ 
-              'TITLE'=> $sTitle,//name
-              'COMMENTS' => $sDescription,             //description
-              'PHONE'=> $arPhoneGeneral,//general-phone
-              'PHONE'=> $arPhoneMobile, //mobile-phone
-              'PHONE'=> $arPhoneWork,//work-phone
-              'PHONE'=> $arPhoneWorkPostfix,//work-phone-postfix
-              'PHONE'=> $arPhoneOther,//other-phone
-              'PHONE'=> $arPhoneOtherPostfix,//other-phone-postfix
-              'PHONE'=> $arPhoneFax,//fax
-              'EMAIL'=> $arEmail,//email
-              'EMAIL'=> $arEmailOther
-              'WEB' => $arWeb,  
-              'ADDRESS' => $sAddress,
-              'ADDRESS_CITY' => $sCity, 
-              'ADDRESS_POSTAL_CODE' => $sZipCode,
-              'ADDRESS_REGION' => $sRegion,           
-              'ADDRESS_COUNTRY' => $sCountry,
-          ]
-      ]))){
+    $sTitle = $data['name'];
+    $sEmail = $data['email'];
+    $sEmailOther = $data['other_email'];
+
+    $sPhoneGeneral = $data['general_phone'];
+    $sPhoneMobile = $data['mobile_phone'];
+    $sPhoneWork = $data['work_phone'];
+    $sPhoneWorkPostfix = $data['work_phone_postfix'];
+    $sPhoneOther = $data['other_phone'];
+    $sPhoneOtherPostfix = $data['other_phone_postfix'];
+    $sPhoneFax = $data['fax'];
+
+    $sDescription = $data['description'];
+    $sWeb = $data['website'];
+    $arWeb = (!empty($sWeb)) ? array(array('VALUE' => $sWeb, 'VALUE_TYPE' => 'OTHER')) : array();
+
+
+    $arPhoneGeneral = (!empty($sPhoneGeneral)) ? array(array('VALUE' => $sPhoneGeneral, 'VALUE_TYPE' => 'WORK')) : array();
+    $arPhoneMobile = (!empty($sPhoneMobile)) ? array(array('VALUE' => $sPhoneMobile, 'VALUE_TYPE' => 'MOBILE')) : array();
+    $arPhoneWork = (!empty($sPhoneWork)) ? array(array('VALUE' => $sPhoneWork, 'VALUE_TYPE' => 'WORK')) : array();
+    $arPhoneWorkPostfix = (!empty($sPhoneWorkPostfix)) ? array(array('VALUE' => $sPhoneWorkPostfix, 'VALUE_TYPE' => 'WORK')) : array();
+    $arPhoneOther = (!empty($sPhoneOther)) ? array(array('VALUE' => $sPhoneOther, 'VALUE_TYPE' => 'OTHER')) : array();
+    $arPhoneOtherPostfix = (!empty($sPhoneOtherPostfix)) ? array(array('VALUE' => $sPhoneOtherPostfix, 'VALUE_TYPE' => 'OTHER')) : array();
+    $arPhoneFax = (!empty($sPhoneFax)) ? array(array('VALUE' => $sPhoneFax, 'VALUE_TYPE' => 'FAX')) : array();
+    $arEmail = (!empty($sEmail)) ? array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'WORK')) : array();
+    $arEmailOther = (!empty($sEmailOther)) ? array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'OTHER')) : array();
+
+    $sINN = $data['inn'];
+    $sFullName = $data['full_name'];
+    $sShortName = $data['short_name'];
+    $sOgrn = $data['ogrn'];
+    $sKpp = $data['kpp'];
+    $sOkved = $data['okved'];
+    $sDirector = $data['director'];
+    $sAccountant = $data['accountant'];
+
+
+    $sCountry = $data['country'];
+    $sRegion = $data['region'];
+    $sCity = $data['city'];
+    $sAddress = $data['address'];
+    $sZipCode = $data['zip_code'];
+    $sActualCountry = $data['actual_country'];
+    $sActualRegion = $data['actual_region'];
+    $sActualCity = $data['actual_city'];
+    $sActualZipCode = $data['actual_zip_code'];
+    $sActualStreet = $data['actual_street'];
+    $sActualHouse = $data['actual_house'];
+    $sActualBuild = $data['actual_build'];
+    $sActualOffice = $data['actual_office'];
+    //$sIdContact = $data['contact_id'];
+    $sIdContact = $data['contact_id'];
+    $sIdDeal = $data['deal_id'];
+    $sIdTask = $data['task_id'];
+    if (empty ($result = CRest::call(
+        'crm.company.add',
+        [
+            'fields' =>
+                [
+                    'TITLE' => $sTitle,//name
+                    'COMMENTS' => $sDescription,             //description
+                    'PHONE' => $arPhoneGeneral,//general-phone
+                    'PHONE' => $arPhoneMobile, //mobile-phone
+                    'PHONE' => $arPhoneWork,//work-phone
+                    'PHONE' => $arPhoneWorkPostfix,//work-phone-postfix
+                    'PHONE' => $arPhoneOther,//other-phone
+                    'PHONE' => $arPhoneOtherPostfix,//other-phone-postfix
+                    'PHONE' => $arPhoneFax,//fax
+                    'EMAIL' => $arEmail,//email
+                    'EMAIL' => $arEmailOther,
+                    'WEB' => $arWeb,
+                    'ADDRESS' => $sAddress,
+                    'ADDRESS_CITY' => $sCity,
+                    'ADDRESS_POSTAL_CODE' => $sZipCode,
+                    'ADDRESS_REGION' => $sRegion,
+                    'ADDRESS_COUNTRY' => $sCountry,
+                    ''
+                ]
+        ]))) {
         error_log("Company not added");
-      }
-      if(!empty($result['result'])){
+    }
+    if (!empty($result['result'])) {
         $resultRequisite = CRest::call(
             'crm.requisite.add',
             [
-                'fields' =>[
+                'fields' => [
                     'ENTITY_TYPE_ID' => 4,//4 - is company in CRest::call('crm.enum.ownertype');
                     'ENTITY_ID' => $result['result'],//company id
                     'TITLE' => $sTitle,
@@ -110,44 +127,87 @@ function create_company($data){
                     'RQ_KPP' => $sKpp,
                     'RQ_OKVED' => $sOkved,
                     'RQ_DIRECTOR' => $sDirector,
-                    'RQ_ACCOUNTANT' => $sAccountant,                  
+                    'RQ_ACCOUNTANT' => $sAccountant,
                 ]
             ]);
-            if(!empty($resultRequisite['result'])){
-              $resultAddress = CRest::call(
-                  'crm.address.add',
-                  [
-                      'fields' =>[
+        if (!empty($resultRequisite['result'])) {
+            $resultAddress = CRest::call(
+                'crm.address.add',
+                [
+                    'fields' => [
                         'TYPE_ID' => 1,
                         'ENTITY_ID' => $result['result'],
                         'ADDRESS_1' => $sActualStreet,
                         'ADDRESS_1' => $sActualHouse,
                         'ADDRESS_1' => $sActualBuild,
                         'ADDRESS_2' => $sActualOffice
-                      ]
-                  ]);
-          }
-          foreach ($contact_synergy as $data['contact_id'])
-          if ($data['contact_id'] == $contact_synergy){
-          if(!empty($result['result'])){
-            $resultRequisite = CRest::call(
-                'crm.company.contact.add',
-                [   'id' => $result['result'],
-                    'fields' =>[
-                        'CONTACT_ID' => $sIdContact
                     ]
-                ])} else{
-                  create_contact($data);
+                ]);
+        }
+        $queryContactCompany = "SELECT id_contact_bitrix FROM contact_id WHERE id_contact_synergy=?";
+        $stmt = mysqli_prepare($link, $queryContactCompany);
+        mysqli_stmt_bind_param($stmt, "i", $sIdContact);
+        foreach ($contact_synergy as $sIdContact) {
+            mysqli_stmt_execute($stmt);
+            $resultSelect = mysqli_stmt_get_result($stmt);
+            while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
+                foreach ($row as $idContactBitrix) {
+                    if (!empty($idContactBitrix)) {
+                        $resultRequisite = CRest::call(
+                            'crm.company.contact.add',
+                            ['id' => $result['result'],
+                                'fields' => [
+                                    'CONTACT_ID' => idContactBitrix
+                                ]
+                            ]);
+                    } else {
+                        create_contact($data);
+                    }
                 }
-              }
             }
-          mysqli_query($connection, "INSERT INTO 'Companys' ('data['id']', 'result.data()') ");
-          custom_company($data);
-          deal_add($data);
-          task_add($data);
+        }
+        $queryDealCompany = "SELECT id_deal_bitrix FROM deal_id WHERE id_deal_synergy=?";
+        $stmtd = mysqli_prepare($link, $queryDealCompany);
+        mysqli_stmt_bind_param($stmt, "i", $sIdDeal);
+        foreach ($deal_synergy as $sIdDeal) {
+            mysqli_stmt_execute($stmtd);
+            $resultSelectDeal = mysqli_stmt_get_result($stmtd);
+            while ($rowd = mysqli_fetch_array($resultSelectDeal, MYSQLI_NUM)) {
+                foreach ($rowd as $idDealBitrix) {
+                    if (!empty($idDealBitrix)) {
+                        update_deal($data);
+                        //обновление сделки
+                    } else{
+                        create_deal($data);
+                    }
+                }
+            }
+
+        }
+        $queryTaskCompany = "SELECT id_task_bitrix FROM task_id WHERE id_task_synergy=?";
+        $stmtt = mysqli_prepare($link, $queryTaskCompany);
+        mysqli_stmt_bind_param($stmtt, "i", $sIdTask);
+        foreach ($task_synergy as $sIdTask) {
+            mysqli_stmt_execute($stmtt);
+            $resultSelectTask = mysqli_stmt_get_result($stmtt);
+            while ($rowt = mysqli_fetch_array($resultSelectTask, MYSQLI_NUM)) {
+                foreach ($rowt as $idTaskBitrix) {
+                    if (!empty($idDealBitrix)) {
+                        update_task($data);
+                    } else {
+                        create_task($data);
+                    }
+                }
+            }
+        }
+       //проверяем есть ли такая сделка в бд если есть функция обновления если нет функция создания $sIdDeal
+    }
+}
+ //Deal
+//в конце айди компании по синергии и битриксу добавляем в БД
         
 
-}
+
       
 
 function create_contact($data){
