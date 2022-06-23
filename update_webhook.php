@@ -8,7 +8,8 @@ function update_company($data)
     $resultId = mysqli_query($link, $querySynergy);
     $company_synergy = mysqli_fetch_array($resultId, MYSQLI_NUM);
 
-    $sIdCompany = $data['id'];
+
+    //$sIdCompany = $data['id'];
     $sTitle = $data['name'];
     $sEmail = $data['email'];
     $sEmailOther = $data['other_email'];
@@ -126,12 +127,13 @@ function update_company($data)
     $queryCompany = "SELECT id_company_bitrix FROM companys_id WHERE id_company_crm=?";
     $stmt = mysqli_prepare($link, $queryCompany);
     mysqli_stmt_bind_param($stmt, "i", $sIdCompanys);
-    foreach ($company_synergy as $sIdCompanys) {
+   // foreach ($company_synergy as $sIdCompanys) {
         mysqli_stmt_execute($stmt);
         $resultSelect = mysqli_stmt_get_result($stmt);
         while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
             foreach ($row as $idBitrix) {
                 if (!empty($idBitrix)) {
+                    error_log("{$idBitrix}");
                     if (empty($result = CRest::call(
                         'crm.company.update',
                         ['id' => $idBitrix,
@@ -212,7 +214,7 @@ function update_company($data)
                 }
             }
         }
-    }
+   // }
 }
 
 
