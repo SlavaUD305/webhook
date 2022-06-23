@@ -32,15 +32,12 @@ function create_company($data)
     $sWeb = $data['website'];
     $arWeb = (!empty($sWeb)) ? array(array('VALUE' => $sWeb, 'VALUE_TYPE' => 'OTHER')) : array();
 
-    $arPhoneGeneral = (!empty($sPhoneGeneral)) ? array(array('VALUE' => $sPhoneGeneral, 'VALUE_TYPE' => 'WORK')) : array();
-    $arPhoneMobile = (!empty($sPhoneMobile)) ? array(array('VALUE' => $sPhoneMobile, 'VALUE_TYPE' => 'MOBILE')) : array();
-    $arPhoneWork = (!empty($sPhoneWork)) ? array(array('VALUE' => $sPhoneWork, 'VALUE_TYPE' => 'WORK')) : array();
-    $arPhoneWorkPostfix = (!empty($sPhoneWorkPostfix)) ? array(array('VALUE' => $sPhoneWorkPostfix, 'VALUE_TYPE' => 'WORK')) : array();
-    $arPhoneOther = (!empty($sPhoneOther)) ? array(array('VALUE' => $sPhoneOther, 'VALUE_TYPE' => 'OTHER')) : array();
-    $arPhoneOtherPostfix = (!empty($sPhoneOtherPostfix)) ? array(array('VALUE' => $sPhoneOtherPostfix, 'VALUE_TYPE' => 'OTHER')) : array();
-    $arPhoneFax = (!empty($sPhoneFax)) ? array(array('VALUE' => $sPhoneFax, 'VALUE_TYPE' => 'FAX')) : array();
-    $arEmail = (!empty($sEmail)) ? array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'WORK')) : array();
-    $arEmailOther = (!empty($sEmailOther)) ? array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'OTHER')) : array();
+    $arPhone = array( array('VALUE' => $sPhoneMobile, 'VALUE_TYPE' => 'MOBILE'),  array('VALUE' => $sPhoneGeneral, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $sPhoneWork, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $sPhoneOther, 'VALUE_TYPE' => 'OTHER'));
+
+
+
+
+    $arEmail = array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $sEmail, 'VALUE_TYPE' => 'OTHER'));
 
     $sINN = $data['inn'];
     $sFullName = $data['full_name'];
@@ -73,6 +70,20 @@ function create_company($data)
     $sMailingHouse = $data['mailing_house'];
     $sMailingBuild = $data['mailing_build'];
     $sMailingOffice = $data['mailing_office'];
+    $rJuristicCountry = $data['juristic_country'];
+    $rJuristicRegion = $data['juristic_region'];
+    $rJuristicCity = $data['juristic_city'];
+    $rJuristicZipCode = $data['juristic_zip_code'];
+    $rJuristicStreet = $data['juristic_street'];
+    $rJuristicHouse = $data['juristic_house'];
+    $rJuristicBuild = $data['juristic_build'];
+    $rJuristicOffice = $data['juristic_office'];
+
+    $rLawfulnessBase = $data['lawfulness_base'];
+    $rManagerName = $data['manager_name'];
+    $rMangerPosition = $data ['manager_position'];
+    $idType = 6;
+    $fieldName = "Организация";
 
     if(!empty($sDescription)){
         $sCom = "Описание: {$sDescription}";
@@ -132,65 +143,98 @@ function create_company($data)
                 [
                     'TITLE' => $sTitle,//name
                     'COMMENTS' => $sCom,             //description
-                    'PHONE' => $arPhoneGeneral,//general-phone
-                    'PHONE' => $arPhoneMobile, //mobile-phone
-                    'PHONE' => $arPhoneWork,//work-phone
-                    'PHONE' => $arPhoneWorkPostfix,//work-phone-postfix
-                    'PHONE' => $arPhoneOther,//other-phone
-                    'PHONE' => $arPhoneOtherPostfix,//other-phone-postfix
-                    'PHONE' => $arPhoneFax,//fax
-                    'EMAIL' => $arEmail,//email
-                    'EMAIL' => $arEmailOther,
+                    'PHONE' => $arPhone,//general-phone
+                    'EMAIL' => $arEmail,
                     'WEB' => $arWeb,
                     'ADDRESS' => $sAddress,
                     'ADDRESS_CITY' => $sCity,
                     'ADDRESS_POSTAL_CODE' => $sZipCode,
                     'ADDRESS_REGION' => $sRegion,
                     'ADDRESS_COUNTRY' => $sCountry,
-                    ''
+
                 ]
         ]))) {
         error_log("Company not added");
     }
+    $sidBitrix = $result['result'];
     if (!empty($result['result'])) {
-        $resultRequisite = CRest::call(
-            'crm.requisite.add',
+
+
+        if (empty($resultRequisitePreset = CRest::call(
+            'crm.requisite.preset.add',
             [
                 'fields' => [
-                    'ENTITY_TYPE_ID' => 4,//4 - is company in CRest::call('crm.enum.ownertype');
-                    'ENTITY_ID' => $result['result'],//company id
-                    'TITLE' => $sTitle,
-                    'ACTIVE' => 'Y',
-                    'NAME' => $sTitle,
-                    'RQ_INN' => $sINN,
-                    'RQ_COMPANY_FULL_NAME' => $sFullName,
-                    'RQ_COMPANY_NAME' => $sShortName,
-                    'RQ_OGRN' => $sOgrn,
-                    'RQ_KPP' => $sKpp,
-                    'RQ_OKVED' => $sOkved,
-                    'RQ_DIRECTOR' => $sDirector,
-                    'RQ_ACCOUNTANT' => $sAccountant,
+                    'ENTITY_TYPE_ID' => 8,
+                    'NAME' => $fieldName,
+
                 ]
-            ]);
+            ]))) {
+            error_log("Preset is empty");
+        }
+        if (!empty($rLawfulnessBase)) {
+            $rCom = "Правомочность: {$rLawfulnessBase};";
+        }
+        if (empty($rMangerPosition)) {
+            $rCom = "{$rCom} Должность руководителя: {$rMangerPosition}";
+        }
+        if (!empty($resultRequisitePreset['result'])) {
+            $presetId = $resultRequisitePreset['result'];
+
+            if (!empty($resultRequisite = CRest::call(
+                'crm.requisite.add',
+                [
+                    'fields' => [
+                        'ENTITY_TYPE_ID' => 4,//4 - is company in CRest::call('crm.enum.ownertype');
+                        'ENTITY_ID' => $sidBitrix,//company id
+                        'PRESET_ID' => $presetId,
+                        'RQ_NAME' => $rManagerName,
+                        'RQ_INN' => $sINN,
+                        'RQ_COMPANY_FULL_NAME' => $sFullName,
+                        'RQ_COMPANY_NAME' => $sShortName,
+                        'RQ_OGRN' => $sOgrn,
+                        'RQ_KPP' => $sKpp,
+                        'RQ_OKVED' => $sOkved,
+                        'RQ_DIRECTOR' => $sDirector,
+                        'RQ_ACCOUNTANT' => $sAccountant,
+                        'COMMENTS' => $rCom
+                    ]
+                ])));
+
+        }
+        if (!empty($rJuristicStreet)) {
+            $rAdress1 = "{$rJuristicStreet}";
+        }
+        if (!empty($rJuristicHouse)) {
+            $rAdress1 = "{$rAdress1} {$rJuristicHouse}";
+        }
+        if (!empty($rJuristicBuild)) {
+            $rAdress1 = "{$rAdress1} {$rJuristicBuild}";
+        }
         if (!empty($resultRequisite['result'])) {
+
             $resultAddress = CRest::call(
                 'crm.address.add',
                 [
                     'fields' => [
-                        'TYPE_ID' => 1,
-                        'ENTITY_ID' => $result['result'],
-                        'ADDRESS_1' => $sActualStreet,
-                        'ADDRESS_1' => $sActualHouse,
-                        'ADDRESS_1' => $sActualBuild,
-                        'ADDRESS_2' => $sActualOffice
+                        'TYPE_ID' => $idType,
+                        'ENTITY_ID' => $sidBitrix,
+                        'ADDRESS_1' => $rAdress1,
+                        'ADDRESS_2' => $rJuristicOffice,
+                        'CITY' => $rJuristicCity,
+                        'POSTAL_CODE' => $rJuristicZipCode,
+                        'PROVINCE' => $rJuristicRegion,
+                        'COUNTRY' => $rJuristicCountry
                     ]
                 ]);
         }
-        $stmt = mysqli_prepare($link, "INSERT INTO companys_id (id_company_crm, id_company_bitrix) VALUES (?,?)");
-        mysqli_stmt_bind_param($stmt, "ii", $sIdCompany, $result['result']);
-        mysqli_stmt_execute($stmt);
     }
+    $stmt = mysqli_prepare($link, "INSERT INTO companys_id (id_company_crm, id_company_bitrix) VALUES (?,?)");
+    mysqli_stmt_bind_param($stmt, "ii", $sIdCompany, $sidBitrix);
+    mysqli_stmt_execute($stmt);
 }
+
+
+
 
     //    $queryContactCompany = "SELECT id_contact_bitrix FROM contact_id WHERE id_contact_crm=?";
      //   $stmt = mysqli_prepare($link, $queryContactCompany);
