@@ -267,26 +267,165 @@ function create_company($data)
 
       
 
-function create_contact($data){
+function create_contact($data)
+{
+    $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
+    $cIdContact = $data['id'];
 
-  $cName = $data['first_name'];
-  $cLastName = $data['last_name'];
-  $cMiddleName = $data['middle_name'];
+    $cName = $data['first_name'];
+    $cLastName = $data['last_name'];
+    $cMiddleName = $data['middle_name'];
+    $cDescription = $data['description'];
+    $cGeneralPhone = $data['general_phone'];
+    $cMobilePhone = $data['mobile_phone'];
+    $cWorkPhone = $data['work_phone'];
+    $cOtherPhone = $data['other_phone'];
+    $arPhone = array(array('VALUE' => $cMobilePhone, 'VALUE_TYPE' => 'MOBILE'), array('VALUE' => $cGeneralPhone, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $cWorkPhone, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $cOtherPhone, 'VALUE_TYPE' => 'OTHER'));
+    $cEmail = $data['email'];
+    $cOtherEmail = $data['other_email'];
+    $arEmail = array(array('VALUE' => $cEmail, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $cOtherEmail, 'VALUE_TYPE' => 'OTHER'));
+    $cWebsite = $data['website'];
+    $arWeb = (!empty($cWebsite)) ? array(array('VALUE' => $cWebsite, 'VALUE_TYPE' => 'OTHER')) : array();
 
-  if(!Crest::call(
-    'crm.contact.add',
-    [
-      'fields'=>
-      [
-        "NAME"=> $cName, 
-        "SECOND_NAME"=> $cMiddleName, 
-        "LAST_NAME"=> $cLastName
-      ]
-    ]
-  )){
-    error_log("Contact not added");
-  }
+    //Рабочий адрес
+    $cWorkCountry = $data['work_country'];
+    $cWorkRegion = $data['work_region'];
+    $cWorkCity = $data['work_city'];
+    $cWorkZipCode = $data['work_zipcode'];
+    $cWorkStreet = $data['work_street'];
+    $cWorkBuilding = $data['work_building'];
+    $cWorkHousing = $data['work_housing'];
+    $cWorkApartment = $data['work_apartment'];
+    $arAddress = array($cWorkStreet, $cWorkBuilding, $cWorkHousing, $cWorkApartment);
 
+    //Домашний адрес
+    $cHomeCountry = $data['home_country'];
+    $cHomeRegion = $data['home_region'];
+    $cHomeCity = $data['home_city'];
+    $cHomeZipCode = $data['home_zipcode'];
+    $cHomeStreet = $data['home_street'];
+    $cHomeBuilding = $data['home_building'];
+    $cHomeHousing = $data['home_housing'];
+    $cHomeApartment = $data['home_apartment'];
+
+    //Соц. сети и мессенджеры
+    $cVK = $data['vkontakte'];
+    $cFacebook = $data['facebook'];
+    $cLinkedin = $data['linkedin'];
+    $cOdnoklassniki = $data['odnoklassniki'];
+    $cInstagramm = $data['instagram'];
+    $cTwitter = $data['twitter'];
+    $cWhatsapp = $data['whatsapp'];
+    $cViber = $data['viber'];
+    $cTelegram = $data['telegram'];
+    $cSkype = $data['skype'];
+    $arIM = array(array('VALUE' => $cVK, 'VALUE_TYPE' => 'OTHER'),
+        array('VALUE' => $cFacebook, 'VALUE_TYPE' => 'FACEBOOK'),
+        array('VALUE' => $cLinkedin, 'VALUE_TYPE' => 'OTHER'),
+        array('VALUE' => $cOdnoklassniki, 'VALUE_TYPE' => 'OTHER'),
+        array('VALUE' => $cInstagramm, 'VALUE_TYPE' => 'INSTAGRAM'),
+        array('VALUE' => $cTwitter, 'VALUE_TYPE' => 'OTHER'),
+        array('VALUE' => $cWhatsapp, 'VALUE_TYPE' => 'OTHER'),
+        array('VALUE' => $cViber, 'VALUE_TYPE' => 'VIBER'),
+        array('VALUE' => $cTelegram, 'VALUE_TYPE' => 'TELEGRAM'),
+        array('VALUE' => $cSkype, 'VALUE_TYPE' => 'SKYPE'));
+
+    if (!empty($cDescription)) {
+        $cCom = "Описание: {$cDescription};";
+    }
+    if (!empty($cHomeCountry)) {
+        $cCom = "{$cCom} Дом. страна: {$cHomeCountry};";
+    }
+    if (!empty($cHomeRegion)) {
+        $cCom = "{$cCom} Дом. регион: {$cHomeRegion};";
+    }
+    if (!empty($cHomeCity)) {
+        $cCom = "{$cCom} Дом. город: {$cHomeCity};";
+    }
+    if (!empty($cHomeZipCode)) {
+        $cCom = "{$cCom} Дом. индекс: {$cHomeZipCode};";
+    }
+    if (!empty($cHomeStreet)) {
+        $cCom = "{$cCom} Дом. улица: {$cHomeStreet};";
+    }
+    if (!empty($cHomeBuilding)) {
+        $cCom = "{$cCom} Дом. дом: {$cHomeBuilding};";
+    }
+    if (!empty($cHomeHousing)) {
+        $cCom = "{$cCom} Дом. корпус: {$cHomeHousing};";
+    }
+    if (!empty($cHomeApartment)) {
+        $cCom = "{$cCom} Дом. квартира: {$cHomeApartment};";
+    }
+    $cIdCompany = $data['company_id'];
+    $queryCompany = "SELECT id_company_bitrix FROM companys_id WHERE id_company_crm=?";
+    $stmt = mysqli_prepare($link, $queryCompany);
+    mysqli_stmt_bind_param($stmt, "i", $cIdCompany);
+    mysqli_stmt_execute($stmt);
+    $resultSelect = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
+        foreach ($row as $idBitrix) {
+            if (!empty($idBitrix)) {
+
+                if (!empty ($result = CRest::call(
+                    'crm.contact.add',
+                    [
+                        'fields' =>
+                            [
+                                'NAME' => $cName,
+                                'LAST_NAME' => $cLastName,
+                                'SECOND_NAME' => $cMiddleName,
+                                'PHONE' => $arPhone,
+                                'EMAIL' => $arEmail,
+                                'WEB' => $arWeb,
+                                'ADDRESS' => $arAddress,
+                                'ADDRESS_CITY' => $cWorkCity,
+                                'ADDRESS_COUNTRY' => $cWorkCountry,
+                                'ADDRESS_POSTAL_CODE' => $cWorkZipCode,
+                                'ADDRESS_PROVINCE' => $cWorkRegion,
+                                'COMMENTS' => $cCom,
+                                'IM' => $arIM,
+                                'COMPANY_ID' => $idBitrix
+
+                            ]
+                    ]))) {
+                    $sidBitrix = $result['result'];
+                    $stmt = mysqli_prepare($link, "INSERT INTO contact_id (id_contact_crm, id_contact_bitrix) VALUES (?,?)");
+                    mysqli_stmt_bind_param($stmt, "ii", $cIdContact, $sidBitrix);
+                    mysqli_stmt_execute($stmt);
+                }
+
+        }
+
+        }
+    }
+    if(empty($result['result'])) {
+        if (!empty ($cResult = CRest::call(
+            'crm.contact.add',
+            [
+                'fields' =>
+                    [
+                        'NAME' => $cName,
+                        'LAST_NAME' => $cLastName,
+                        'SECOND_NAME' => $cMiddleName,
+                        'PHONE' => $arPhone,
+                        'EMAIL' => $arEmail,
+                        'WEB' => $arWeb,
+                        'ADDRESS' => $arAddress,
+                        'ADDRESS_CITY' => $cWorkCity,
+                        'ADDRESS_COUNTRY' => $cWorkCountry,
+                        'ADDRESS_POSTAL_CODE' => $cWorkZipCode,
+                        'ADDRESS_PROVINCE' => $cWorkRegion,
+                        'COMMENTS' => $cCom,
+                        'IM' => $arIM
+                    ]
+            ]))) {
+            $sidBitrix = $cResult['result'];
+            $stmt = mysqli_prepare($link, "INSERT INTO contact_id (id_contact_crm, id_contact_bitrix) VALUES (?,?)");
+            mysqli_stmt_bind_param($stmt, "ii", $cIdContact, $sidBitrix);
+            mysqli_stmt_execute($stmt);
+        }
+    }
 }
 
 function create_deal($data){
@@ -371,37 +510,6 @@ switch (json_last_error()) {
 }
 
 
-function change_company(){
-
-}
-
-
-
-
-
-function  process_company($data){ //функция в которой я проверяю создан объект или нет если да, то смотрим что с ним делать, обновить или удалить(с этими вещами надо еще подумать), если нет то создаем
-    //  CRest::call(
-    //    "crm.company.update",
-    //  {
-    //    id: $data['id'],
-    //  fields:
-    //{
-
-    //},
-    //params: { "REGISTER_SONET_EVENT": "Y" }
-    //},
-    // function(result)
-    //{
-    //   if(result.error())
-    //      console.error(result.error());
-    // else
-    // {
-    //    console.info(result.data());
-    // }
-    // }
-    //);
-}
-//access_log(var_dump($data));
 
 
 
