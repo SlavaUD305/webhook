@@ -187,6 +187,7 @@ function create_company($data)
                         'ENTITY_TYPE_ID' => 4,//4 - is company in CRest::call('crm.enum.ownertype');
                         'ENTITY_ID' => $sidBitrix,//company id
                         'PRESET_ID' => $presetId,
+
                         'RQ_NAME' => $rManagerName,
                         'RQ_INN' => $sINN,
                         'RQ_COMPANY_FULL_NAME' => $sFullName,
