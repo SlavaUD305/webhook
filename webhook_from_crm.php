@@ -23,10 +23,8 @@ function create_company($data)
     $sPhoneGeneral = $data['general_phone'];
     $sPhoneMobile = $data['mobile_phone'];
     $sPhoneWork = $data['work_phone'];
-    $sPhoneWorkPostfix = $data['work_phone_postfix'];
     $sPhoneOther = $data['other_phone'];
-    $sPhoneOtherPostfix = $data['other_phone_postfix'];
-    $sPhoneFax = $data['fax'];
+
 
     $sDescription = $data['description'];
     $sWeb = $data['website'];
@@ -37,7 +35,7 @@ function create_company($data)
 
 
 
-    $arEmail = array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $sEmail, 'VALUE_TYPE' => 'OTHER'));
+    $arEmail = array(array('VALUE' => $sEmail, 'VALUE_TYPE' => 'WORK'), array('VALUE' => $sEmailOther, 'VALUE_TYPE' => 'OTHER'));
 
     $sINN = $data['inn'];
     $sFullName = $data['full_name'];
