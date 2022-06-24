@@ -331,7 +331,7 @@ function create_contact($data)
         array('VALUE' => $cSkype, 'VALUE_TYPE' => 'SKYPE'));
 
     if (!empty($cDescription)) {
-        $cCom = "Описание: {$cDescription};";
+        $cCom = "Описание: {$cDescription}";
     }
     if (!empty($cHomeCountry)) {
         $cCom = "{$cCom} Дом. страна: {$cHomeCountry};";
@@ -429,30 +429,50 @@ function create_contact($data)
 }
 
 function create_deal($data){
-    $dTitle = $data['name'];
-  if(!CRest::call(
-    'crm.deal.add',
-    [
-        'fields'=>
-        [ 
-          "TITLE" => $dTitle 
-			   // "TYPE_ID": "GOODS", 
-			   // "STAGE_ID": "NEW", 					
-			    //"COMPANY_ID": 3,
-			    //"CONTACT_ID": 3,
-			    //"OPENED": "Y", 
-			    //"ASSIGNED_BY_ID": 1, 
-			    //"PROBABILITY": 30,
-			    //"CURRENCY_ID": "USD", 
-			    //"OPPORTUNITY": 5000,
-			    //"CATEGORY_ID": 5,
-			    //"BEGINDATE": date2str(current),
-			    //"CLOSEDATE": date2str(nextMonth)
-        ]
-        ])){
-          error_log("Deal not added");
-        }
 
+    $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
+    $dName = $data['name'];
+    $dIdDeal = $data['id'];
+   $dDescription = $data['description'];
+   $dAmount = $data['amount'];
+   $dCost = $data['cost'];
+   $dProfit = $data['profit'];
+   $dNumber = $data['number'];
+   $dPlannedAt = $data['planned_at'];
+   $dFinishedAt = $data['finished-at'];
+
+    if(!empty($dDescription)){
+        $dCom = "Описание: {$dDescription}";
+    }
+    if(!empty($dCost)){
+        $dCom = "{$dCom} Себестоимость сделки: {$dCost};";
+    }
+    if (!empty($dProfit)){
+        $dCom = "{$dCom} Прибыль сделки: {$dProfit};";
+    }
+    if(!empty($dNumber)){
+        $dCom = "{$dCom} Номер сделки: {$dNumber};";
+    }
+    if(!empty($dPlannedAt)){
+        $dCom = "{$dCom} Планируемая дата закрытия: {$dPlannedAt};";
+    }
+    if (!empty ($result = CRest::call(
+        'crm.deal.add',
+        [
+            'fields' =>
+                [
+                    'TITLE' => $dName,
+                    'COMMENTS' => $dCom,
+                    'OPPORTUNITY' => $dAmount,
+                    'CLOSEDATE' => $dFinishedAt
+
+                ]
+        ]))) {
+        $sidBitrix = $result['result'];
+        $stmt = mysqli_prepare($link, "INSERT INTO deal_id (id_deal_crm, id_deal_bitrix) VALUES (?,?)");
+        mysqli_stmt_bind_param($stmt, "ii", $dIdDeal, $sidBitrix);
+        mysqli_stmt_execute($stmt);
+    }
 
 }
 
@@ -531,7 +551,7 @@ switch ($data['type']) {
     case 'Company' :
     error_log("case");
     create_company($data['data']);
-   // process_company($data['data']);
+   
     break;
   default:
   //error_log($data['data']);
