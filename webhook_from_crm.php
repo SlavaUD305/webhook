@@ -439,7 +439,7 @@ function create_deal($data){
    $dProfit = $data['profit'];
    $dNumber = $data['number'];
    $dPlannedAt = $data['planned_at'];
-   $dFinishedAt = $data['finished-at'];
+   $dFinishedAt = $data['finished_at'];
 
     if(!empty($dDescription)){
         $dCom = "Описание: {$dDescription}";
@@ -476,23 +476,38 @@ function create_deal($data){
 
 }
 
-function create_task($data){
+function create_task($data)
+{
+    $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
+    $tIdTask = $data['id'];
+    $tName = $data['name'];
+    $tDescription = $data['description'];
+    $tEndTime = $data['end_time'];
+    $tDueDate = $data['due_date'];
+    $id = 1;
 
-  $tTitle = $data['name'];
-  $tetDate = 1;
 
-  if(!Crest::call(
-    'tasks.task.add',
-    [
-      'fields'=>
-      [
-          "TITLE" => $tTitle,
-          "RESPONSIBLE_ID"=> $tetDate
-      ]
-    ]
-  )){
-    error_log("Task not added");
-  }
+    if (!empty ($result = CRest::call(
+        'tasks.task.add',
+        [
+            'fields' =>
+                [
+
+                    'TITLE' => $tName,
+                    'RESPONSIBLE_ID' => $id,
+                    'DESCRIPTION' => $tDescription,
+                    'DEADLINE' => $tDueDate,
+                    'CLOSED_DATE' => $tEndTime
+
+                ]
+        ]))) {
+       $sidBitrix = $result['result'];
+        $stmt = mysqli_prepare($link, "INSERT INTO task_id (id_task_crm, id_task_bitrix) VALUES (?,?)");
+        mysqli_stmt_bind_param($stmt, "ii", $tIdTask, $sidBitrix);
+         mysqli_stmt_execute($stmt);
+    } else {
+        error_log("Error add");
+    }
 }
 
 
@@ -551,7 +566,7 @@ switch ($data['type']) {
     case 'Company' :
     error_log("case");
     create_company($data['data']);
-   
+
     break;
   default:
   //error_log($data['data']);

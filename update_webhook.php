@@ -341,6 +341,97 @@ function update_contact($data)
     }
 }
 
+function update_deal($data){
+    $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
+    $dName = $data['name'];
+    $dIdDeal = $data['id'];
+    $dDescription = $data['description'];
+    $dAmount = $data['amount'];
+    $dCost = $data['cost'];
+    $dProfit = $data['profit'];
+    $dNumber = $data['number'];
+    $dPlannedAt = $data['planned_at'];
+    $dFinishedAt = $data['finished_at'];
+
+    if(!empty($dDescription)){
+        $dCom = "Описание: {$dDescription}";
+    }
+    if(!empty($dCost)){
+        $dCom = "{$dCom} Себестоимость сделки: {$dCost};";
+    }
+    if (!empty($dProfit)){
+        $dCom = "{$dCom} Прибыль сделки: {$dProfit};";
+    }
+    if(!empty($dNumber)){
+        $dCom = "{$dCom} Номер сделки: {$dNumber};";
+    }
+    if(!empty($dPlannedAt)){
+        $dCom = "{$dCom} Планируемая дата закрытия: {$dPlannedAt};";
+    }
+    $queryContact = "SELECT id_deal_bitrix FROM deal_id WHERE id_deal_crm=?";
+    $stmt = mysqli_prepare($link, $queryContact);
+    mysqli_stmt_bind_param($stmt, "i", $dIdDeal);
+    mysqli_stmt_execute($stmt);
+    $resultSelect = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
+        foreach ($row as $idBitrix) {
+            if (!empty($idBitrix)) {
+                if (empty($result = CRest::call(
+                    'crm.deal.update',
+                    ['id' => $idBitrix,
+                        'fields' =>
+                            [
+                                'TITLE' => $dName,
+                                'COMMENTS' => $dCom,
+                                'OPPORTUNITY' => $dAmount,
+                                'CLOSEDATE' => $dFinishedAt
+
+                            ]
+                    ]))) {
+                    error_log("Not updated");
+                }
+            }
+        }
+    }
+}
+
+function update_task($data){
+    $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
+    $tIdTask = $data['id'];
+    $idBitrixTask = 70;
+    $tName = $data['name'];
+    $tDescription = $data['description'];
+    $tEndTime = $data['end_time'];
+    $tDueDate = $data['due_date'];
+    $id = 1;
+    $queryContact = "SELECT id_task_bitrix FROM task_id WHERE id_task_crm=?";
+    $stmt = mysqli_prepare($link, $queryContact);
+    mysqli_stmt_bind_param($stmt, "i", $tIdTask);
+    mysqli_stmt_execute($stmt);
+    $resultSelect = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_array($resultSelect, MYSQLI_NUM)) {
+        foreach ($row as $idBitrix) {
+            if (!empty($idBitrix)) {
+                if (empty($result = CRest::call(
+                    'tasks.task.update',
+                    ['id' => $idBitrixTask,
+                        'fields' =>
+                            [
+                                'TITLE' => $tName,
+                                'RESPONSIBLE_ID' => $id,
+                                'DESCRIPTION' => $tDescription,
+                                'DEADLINE' => $tDueDate,
+                                'CLOSED_DATE' => $tEndTime
+
+                            ]
+                    ]))) {
+                    error_log("Not updated");
+                }
+            }
+        }
+    }
+}
+
 
 
 
