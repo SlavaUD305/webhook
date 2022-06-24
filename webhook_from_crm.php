@@ -12,9 +12,12 @@ require_once (__DIR__.'/connect.php');
 
 function create_company($data)
 {
+    include 'Companys.php';
+    //require_once (__DIR__.'/Companys.php');
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     $link = mysqli_connect('127.0.0.1', 'root', 'admin', 'integration');
-
+    $userCustom = custom_22556;
+    $cCustom = $data['custom_22556'];
     $sIdCompany = $data['id'];
     $sTitle = $data['name'];
     $sEmail = $data['email'];
@@ -133,6 +136,9 @@ function create_company($data)
     }
     if(!empty($sMailingZipCode)){
         $sCom = "{$sCom} Почт. индекс: {$sMailingZipCode};";
+    }
+    if(!empty($cCustom)){
+        $sCom = "{$sCom} Пользовательское поле: {$cCustom}";
     }
     if (empty ($result = CRest::call(
         'crm.company.add',
